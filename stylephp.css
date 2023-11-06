@@ -1,0 +1,20 @@
+.index-title{
+    color: #ffa8a8;
+    text-align: center;
+}
+
+.index-redirect .createphp,.index-redirect .readphp {
+    padding: 20px;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #c9e1f1;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid #3498db;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.index-redirect .createphp .readphp a:hover {
+    background-color:#e7f3fc;
+}
