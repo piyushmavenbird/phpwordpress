@@ -3,6 +3,11 @@ require_once "connection.php";
 $sql = "SELECT * FROM crud";
 $result = mysqli_query($conn, $sql);
 
+if ($result) {
+    $records = mysqli_fetch_all($result, MYSQLI_ASSOC);
+} else {
+    $records = [];
+}
 ?>
 
 <!DOCTYPE html>
@@ -74,15 +79,23 @@ $result = mysqli_query($conn, $sql);
                 </tr>
             </div>
             <?php
-            while ($row = mysqli_fetch_assoc($result)) {
+            
+            foreach ($records as $record) {
                 echo "<tr>";
-                echo "<td>" . $row['id'] . "</td>";
-                echo "<td>" . $row['name'] . "</td>";
-                echo "<td>" . $row['phone_number'] . "</td>";
-                echo "<td>" . $row['email'] . "</td>";
-                echo "<td>" . $row['address'] . "</td>";
-                echo "<td>" . $row['profile_image'] . "</td>";
-                echo "<td><a href='delete.php?id=" . $row['id'] . "'>Delete</a> | <a href='update.php?id=" . $row['id'] . "'>Edit</a></td>";
+                echo "<td>" . $record['id'] . "</td>";
+                echo "<td>" . $record['name'] . "</td>";
+                echo "<td>" . $record['phone_number'] . "</td>";
+                echo "<td>" . $record['email'] . "</td>";
+                echo "<td>" . $record['address'] . "</td>";
+                echo "<td>";
+                $images .= $profile_image.", ";
+                $images = explode(", ", $record['profile_image']);
+                foreach ($images as $image) {
+                    echo "<img src='uploaded-images/" . $image . "' width='100'>&nbsp;";
+                }
+                echo "</td>";
+    
+                echo "<td><a href='delete.php?id=" . $record['id'] . "'>Delete</a> | <a href='update.php?id=" . $record['id'] . "'>Edit</a></td>";
                 echo "</tr>";
             }
             ?>
@@ -93,16 +106,3 @@ $result = mysqli_query($conn, $sql);
     </div>
 </body>
 </html>
-<?php
-    // Check if the profile_image column has a valid image path
-    if (!empty($row['profile_image'])) {
-        // Assuming that 'profile_image' contains the image file path in the database
-        $imagePath = $row['profile_image'];
-        // Output an <img> tag to display the image
-        echo "<img src='$imagePath' alt='Profile Image' style='max-width: 100px; max-height: 100px;'>";
-    } else {
-        // Display a placeholder if no image is available
-        echo "No Image Available";
-    }
-    ?>
-</td>

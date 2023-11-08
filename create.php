@@ -5,18 +5,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phonenumber = $_POST['phonenumber'];
     $email = $_POST['email'];
     $address = $_POST['address'];
-    $profile_image = $_POST['profile_image'];
 
-    $sql = "INSERT INTO crud(name, phone_number, email, address, profile_image) VALUES ('$name', '$phonenumber', '$email', '$address', '$profile_image')";
-    
+    $uploaded_images = array();
+    if (isset($_FILES['profile_image']['name']) && is_array($_FILES['profile_image']['name'])) {
+        foreach ($_FILES['profile_image']['name'] as $key => $image_name) {
+            $target_directory = "uploaded-images/";
+            $target_file = $target_directory . $image_name;
+
+            if (move_uploaded_file($_FILES['profile_image']['tmp_name'][$key], $target_file)) {
+                $uploaded_images[] = $image_name;
+            } else {
+                echo "File upload failed for " . $image_name . ". Please check the upload directory";
+            }
+        }
+    }
+
+    $profile_image_list = implode(", ",$uploaded_images); 
+    $sql = "INSERT INTO crud(name, phone_number, email, address, profile_image) VALUES ('$name', '$phonenumber', '$email', '$address', '$profile_image_list')";
+
     if (mysqli_query($conn, $sql)) {
-        header('Location: read.php'); 
+        header('Location:read.php');  
     } else {
         echo "Error: " . $sql . "<br>" . mysqli_error($conn);
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -86,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h1>Create Record</h1>
     <div class="form">
-        <form action="create.php" method="post" >
+        <form action="create.php" method="post" enctype="multipart/form-data" >
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required>
@@ -109,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           
             <div class="form-group">
                 <label for="profile">Profile Image:</label>
-                <input type="file" id="profile_image" name="profile_image" accept="image/*" >
+                <input type="file" id="profile_image" name="profile_image[]" accept="image/*" multiple="true">
             </div>
 
             <div class="form-group">
